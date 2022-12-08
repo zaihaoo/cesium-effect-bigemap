@@ -1,0 +1,589 @@
+import {
+	CameraEventType,
+	Cartesian3,
+	Cartographic,
+	Cesium3DTileset,
+	Color,
+	createWorldTerrain,
+	Ellipsoid,
+	EllipsoidTerrainProvider,
+	EventHelper,
+	ExperimentalFeatures,
+	GeographicTilingScheme,
+	Ion,
+	Math,
+	Matrix3,
+	Matrix4,
+	NearFarScalar,
+	PostProcessStageLibrary,
+	SkyBox,
+	Transforms,
+	UrlTemplateImageryProvider,
+	Viewer,
+} from 'cesium';
+// import { createBuildingShader } from "./buildingsTexture";
+// import { Rain } from "./Rain";
+import spaceLine from './SpaceLine';
+// import createWay, { line_material } from "./way2";
+
+// import CesiumNavigation from "cesium-navigation-es6";
+import { ArcMode, createElectricArc } from "./createElectricArc";
+// import { HawkEye2DMap } from "./HawkEye2DMap";
+import { draw, enter, exit, removeAll } from '../dev/ClippingPlane';
+// import { TerrainClipPlan } from '../dev/clip';
+
+Ion.defaultAccessToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlN2MzMWE5ZC0wYzkyLTQ3ODMtYmJlYy1iN2QxMWI4NjU3ODUiLCJpZCI6OTMzMjYsImlhdCI6MTY1MjI1MzYyN30.irrMfifWXXSjF_wHoeyjgkmjDHZ4LBnFL4hIZf-HSGg';
+
+const base = new UrlTemplateImageryProvider({
+	// url: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}',
+	url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=cn&x={x}&y={y}&z={z}',
+	// tilingScheme: new Cesium.GeographicTilingScheme(),
+	// maximumLevel: 17,
+});
+
+const viewer = new Viewer('canvas', {
+	// terrainProvider: createWorldTerrain({ requestVertexNormals: true, requestWaterMask: true }),
+	// terrainProvider: new CesiumTerrainProvider({
+	//   url: IonResource.fromAssetId(3956),
+	//   requestVertexNormals: true
+	// }),
+	animation: false, //是否显示动画控件
+	baseLayerPicker: false, //是否显示图层选择控件
+	geocoder: false, //是否显示地名查找控件
+	timeline: false, //是否显示时间线控件
+	sceneModePicker: false, //是否显示投影方式控件
+	navigationHelpButton: false, //是否显示帮助信息控件
+	infoBox: true, //是否显示点击要素之后显示的信息
+	homeButton: false,
+	shouldAnimate: true,
+	imageryProvider: base,
+
+	// imageryProvider: new UrlTemplateImageryProvider({
+	//   url: "http://localhost:9001/bigemap.arcgis-satellite/tiles/{z}/{x}/{y}.jpg?access_token=pk.eyJ1IjoiY3VzXzI5NW1kMnA5IiwiYSI6Ijlsa3h2NGJ1aHAxOG5ieHlqemw5ZnM0MXciLCJ0IjoxfQ.qwuFOEMOF5pJaDeSifOVJcMdq5iQI3mZVn4INsJZBD8",
+	// })
+});
+
+viewer.scene.globe.depthTestAgainstTerrain = true;
+viewer.scene.debugShowFramesPerSecond = true;
+(viewer.cesiumWidget.creditContainer as HTMLElement).style.display = 'none';
+ExperimentalFeatures.enableModelExperimental = true;
+
+if (!PostProcessStageLibrary.isSilhouetteSupported(viewer.scene)) {
+	window.alert('This browser does not support the silhouette post process.');
+}
+
+// onload
+var helper = new EventHelper();
+const RemoveCallback = helper.add(viewer.scene.globe.tileLoadProgressEvent, function (event) {
+	if (event == 0) {
+		// centerAtHome(121.59146, 38.82354, 20);
+		// getPosition(viewer);
+		// viewer.scene.camera.flyTo({
+		//   destination: Cartesian3.fromDegrees(-74.019, 40.6912, 750),
+		//   orientation: {
+		//     heading: Math.toRadians(20),
+		//     pitch: Math.toRadians(-20)
+		//   }
+		// })
+
+		viewer.zoomTo(tileset);
+		// 删除事件监听
+		RemoveCallback();
+	}
+});
+
+viewer.scene.screenSpaceCameraController.rotateEventTypes = [CameraEventType.LEFT_DRAG];
+viewer.scene.screenSpaceCameraController.tiltEventTypes = [CameraEventType.RIGHT_DRAG];
+viewer.scene.screenSpaceCameraController.zoomEventTypes = [CameraEventType.WHEEL];
+
+// function centerAtHome(x: number, y: number, z: number) {
+// 	if (z < 20000) {
+// 		z = 20000;
+// 	}
+
+// 	viewer.camera.flyTo({
+// 		destination: Cartesian3.fromDegrees(x, y, z), //经度、纬度、高度
+// 		orientation: {
+// 			heading: 0,
+// 			pitch: Math.toRadians(-70.5 || -Math.PI_OVER_FOUR),
+// 			roll: Math.toRadians(360 || 0),
+// 		},
+// 	});
+// }
+
+//创建平移矩阵方法二
+// let scale = Cartesian3.fromArray([3,1,1]);
+// const m = Matrix4.fromScale(scale);
+
+let tileset: Cesium3DTileset = viewer.scene.primitives.add(
+	new Cesium3DTileset({
+		url: 'file/build/tileset.json', //数据地址
+		maximumScreenSpaceError: 2, //最大的屏幕空间误差
+		// modelMatrix:m,
+		show: true,
+	})
+);
+tileset.readyPromise.then(function (tileset) {
+	const boundingSphere = tileset.boundingSphere;
+	update3dtiles(tileset, { origin: boundingSphere.center, scalez: 15, translation: { x: 0, y: 0, z: -5 } });
+	let cartographic = Ellipsoid.WGS84.cartesianToCartographic(boundingSphere.center);
+	let lat = Math.toDegrees(cartographic.latitude);
+	let lng = Math.toDegrees(cartographic.longitude);
+	console.log(lng, lat);
+
+	// let rainSystem: ParticleSystem;
+	// var rainParticleSize = 15.0;
+	// var rainRadius = 100000.0;
+	// var rainImageSize = new Cartesian2(rainParticleSize, rainParticleSize * 2.0);
+	// var rainGravityScratch = new Cartesian3();
+	// var rainUpdate = function (particle: any, dt: any) {
+	//   rainGravityScratch = Cartesian3.normalize(particle.position, rainGravityScratch);
+	//   rainGravityScratch = Cartesian3.multiplyByScalar(rainGravityScratch, -1050.0, rainGravityScratch);
+	//   particle.position = Cartesian3.add(particle.position, rainGravityScratch, particle.position);
+	//   var distance = Cartesian3.distance(viewer.scene.camera.position, particle.position);
+	//   if (distance > rainRadius) {
+	//     particle.endColor.alpha = 0.0;
+	//   } else {
+	//     particle.endColor.alpha = rainSystem.endColor.alpha / (distance / rainRadius + 0.1);
+	//   }
+	// };
+	// rainSystem = new ParticleSystem({
+	//   modelMatrix: Matrix4.fromTranslation(viewer.scene.camera.position),
+	//   speed: -1.0,
+	//   lifetime: 15.0,
+	//   emitter: new SphereEmitter(rainRadius),
+	//   startScale: 1.0,
+	//   endScale: 0.0,
+	//   image: './file/texture/fire.png',
+	//   emissionRate: 9000.0,
+	//   startColor: new Color(0.27, 0.5, 0.70, 0.0),
+	//   endColor: new Color(0.27, 0.5, 0.70, 0.98),
+	//   imageSize: rainImageSize,
+	//   updateCallback: rainUpdate
+	// });
+	// console.log(rainSystem);
+	// viewer.scene.primitives.add(rainSystem);
+
+	// 121.5856611728515 38.9129980676015
+	// spaceLine(viewer, [lng, lat]);
+	// createElectricArc(viewer, boundingSphere.center, ArcMode.Bothway, true, new Color(0.33, .44, 0.66, 1.));
+	// createElectricArc(viewer, boundingSphere.center, ArcMode.Down, false, new Color(0., .88, 0.233, 1.));
+});
+
+// 泛光3dtiles
+export const d5 = () => {
+	tileset.customShader = createBuildingShaderFlood();
+};
+
+// 夜晚3dtiles
+export const d4 = () => {
+	tileset.customShader = createBuildingShaderNight();
+};
+
+// 修改3dtiles位置
+/*  var opt = {
+   origin: "",
+   rx: 30,
+   ry: 30,
+   rz: 30,
+   scale: 2,
+   scalex:1,
+   scaley:1,
+   scalez:1,
+   translation: {x:0,y:0,z:0}
+ } */
+function update3dtiles(tileset: Cesium3DTileset, opt: any) {
+	if (!tileset) {
+		alert('缺少模型！');
+		return;
+	}
+
+	var origin = opt.origin;
+	if (!origin) {
+		alert('缺少坐标信息！');
+		return;
+	}
+
+	let mtx = Transforms.eastNorthUpToFixedFrame(origin);
+
+	opt.scalex = opt.scalex || 1;
+	opt.scaley = opt.scaley || 1;
+	opt.scalez = opt.scalez || 1;
+	Matrix4.multiplyByScale(mtx, new Cartesian3(opt.scalex, opt.scaley, opt.scalez), mtx);
+
+	opt.scale = opt.scale || 1; // 缩放系数 默认为1
+	// 建立从局部到世界的坐标矩阵
+	Matrix4.multiplyByUniformScale(mtx, opt.scale, mtx);
+
+	// 表示绕x轴旋转
+	if (opt.rx) {
+		var mx = Matrix3.fromRotationX(Math.toRadians(opt.rx));
+		var rotationX = Matrix4.fromRotationTranslation(mx);
+		Matrix4.multiply(mtx, rotationX, mtx);
+	}
+	// 表示绕y轴旋转
+	if (opt.ry) {
+		var my = Matrix3.fromRotationY(Math.toRadians(opt.ry));
+		var rotationY = Matrix4.fromRotationTranslation(my);
+		Matrix4.multiply(mtx, rotationY, mtx);
+	}
+	// 表示绕z轴旋转
+	if (opt.rz) {
+		var mz = Matrix3.fromRotationZ(Math.toRadians(opt.rz));
+		var rotationZ = Matrix4.fromRotationTranslation(mz);
+		Matrix4.multiply(mtx, rotationZ, mtx);
+	}
+
+	if (opt.translation) {
+		Matrix4.multiplyByTranslation(
+			mtx,
+			new Cartesian3(opt.translation.x, opt.translation.y, opt.translation.z),
+			mtx
+		);
+	}
+	tileset.root.transform = mtx;
+}
+
+// createWay(viewer);
+// new Rain(viewer, {
+//   tiltAngle: 0.6, //倾斜角度
+//   rainSize: 0.6, // 雨大小
+//   rainSpeed: 20.0 // 雨速
+// });
+
+// 自定义的近地天空盒
+let groundSkybox = new SkyBox({
+	sources: {
+		negativeX: './file/skybox/nx.png',
+		positiveX: './file/skybox/px.png',
+		negativeY: './file/skybox/ny.png',
+		positiveY: './file/skybox/py.png',
+		negativeZ: './file/skybox/nz.png',
+		positiveZ: './file/skybox/pz.png',
+	},
+	nearGround: true,
+});
+
+// 自带的默认天空盒
+let defaultSkyBox = viewer.scene.skyBox;
+
+viewer.scene.preUpdate.addEventListener(function () {
+	const e = viewer.camera.position;
+	if (Cartographic.fromCartesian(e).height < 10000) {
+		viewer.scene.skyBox.nearGround = true;
+		viewer.scene.skyBox = groundSkybox;
+		viewer.scene.skyAtmosphere.show = false;
+	} else {
+		viewer.scene.skyBox = defaultSkyBox;
+		viewer.scene.skyAtmosphere.show = true;
+	}
+
+	//   line_material.uniforms.time = ((performance.now() - line_material.uniforms.time) % 1000) / 1000;
+});
+
+// function getAllProperty (feature:any) {
+//     var propertyNames = feature.getPropertyNames()
+//     var length = propertyNames.length
+//     for (var i = 0; i < length; ++i) {
+//         var propertyName = propertyNames[i]
+//         console.log(propertyName + ': ' + feature.getProperty(propertyName) + typeof feature.getProperty(propertyName))
+//     }
+// }
+
+// tileset.style = new Cesium3DTileStyle({
+//    color : {
+//        conditions : [
+//            ["Number(${Height}) >= 20", 'color("purple", 0.5)'],
+//            ["Number(${Height}) >= 10", 'color("red")'],
+//            ['true', 'color("blue")']
+//        ]
+//    },
+//    show : "Number(${Height}) > 0",
+//    meta : {
+//        description : '"Building id ${id} has height ${Height}."'
+//    }
+// });
+
+// var position = Cartesian3.fromDegrees(
+//   121.59146, 38.82354, 100
+// );
+// var entity = viewer.entities.add({
+// 				name: "file/car.glb",
+// 				position: position,
+// 				model: {
+// 					uri: "file/model/car.glb",
+// 					//不管缩放如何，模型的最小最小像素大小。
+// 					minimumPixelSize: 128,
+// 					//模型的最大比例尺大小。 minimumPixelSize的上限。
+// 					maximumScale: 20000,
+// 				},
+// });
+
+// function addMouseOver(stage: PostProcessStage | PostProcessStageComposite) {
+// 	let handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
+// 	handler.setInputAction(function (movement: ScreenSpaceEventHandler.MotionEvent) {
+// 		const pickedObject = viewer.scene.pick(movement.endPosition);
+
+// 		if (defined(pickedObject)) {
+// 			stage.selected = [pickedObject.primitive];
+// 		} else {
+// 			stage.selected = [];
+// 		}
+// 	}, ScreenSpaceEventType.MOUSE_MOVE);
+// }
+
+// addMouseOver(silhouette);
+// function getPosition(viewer: Viewer) {
+// 	var cesiumViewer = viewer;
+// 	var canvas = cesiumViewer.scene.canvas;
+// 	// 定义当前场景的画布元素的事件处理
+// 	var handler = new ScreenSpaceEventHandler(canvas);
+// 	//设置鼠标移动事件的处理函数，这里负责监听x,y坐标值变化
+// 	handler.setInputAction(function (movement: any) {
+// 		let ray = viewer.camera.getPickRay(movement.position) as Ray;
+// 		let cartesian = viewer.scene.globe.pick(ray, viewer.scene) as Cartesian3;
+// 		let cartographic = Cartographic.fromCartesian(cartesian);
+// 		let lng = Math.toDegrees(cartographic.longitude); // 经度
+// 		let lat = Math.toDegrees(cartographic.latitude); // 纬度
+// 		let alt = cartographic.height; // 高度
+// 		let coordinate = {
+// 			longitude: Number(lng.toFixed(6)),
+// 			latitude: Number(lat.toFixed(6)),
+// 			altitude: Number(alt.toFixed(2)),
+// 		};
+// 	}, ScreenSpaceEventType.LEFT_DOUBLE_CLICK); //此枚举类型用于对鼠标事件进行分类:向下、向上、单击、双击、按住按钮时移动和移动。具体参考文档Cesium.ScreenSpaceEventType
+// }
+// getPosition(viewer);
+
+const option: any = {};
+// 用于在使用重置导航重置地图视图时设置默认视图控制。接受的值是Cesium.Cartographic 和 Cesium.Rectangle.
+// option.defaultResetView = Rectangle.fromDegrees(80, 22, 130, 50)
+option.defaultResetView = new Cartographic(
+	Math.toRadians(111.50623801848565),
+	Math.toRadians(2.8997206760441205),
+	8213979.400955964
+);
+//相机方向
+option.orientation = {
+	heading: Math.toRadians(350.94452087411315),
+	pitch: Math.toRadians(-66.6402342251215),
+	roll: Math.toRadians(360),
+};
+//相机延时
+option.duration = 4; //默认为3s
+
+// 用于启用或禁用罗盘。true是启用罗盘，false是禁用罗盘。默认值为true。如果将选项设置为false，则罗盘将不会添加到地图中。
+option.enableCompass = true;
+// 用于启用或禁用缩放控件。true是启用，false是禁用。默认值为true。如果将选项设置为false，则缩放控件将不会添加到地图中。
+option.enableZoomControls = true;
+// 用于启用或禁用距离图例。true是启用，false是禁用。默认值为true。如果将选项设置为false，距离图例将不会添加到地图中。
+option.enableDistanceLegend = true;
+// 用于启用或禁用指南针外环。true是启用，false是禁用。默认值为true。如果将选项设置为false，则该环将可见但无效。
+option.enableCompassOuterRing = true;
+
+//修改重置视图的tooltip
+option.resetTooltip = '重置视图';
+//修改放大按钮的tooltip
+option.zoomInTooltip = '放大';
+//修改缩小按钮的tooltip
+option.zoomOutTooltip = '缩小';
+
+//如需自定义罗盘控件，请看下面的自定义罗盘控件
+// new CesiumNavigation(viewer, option);
+
+// 鹰眼地图初始化
+// let hawkEyeMap = new HawkEye2DMap(viewer);
+// hawkEyeMap._init();
+
+// 计算引擎(粒子发射器)位置矩阵
+// function computeEmitterModelMatrix() {
+// 	//方向
+// 	let hpr = HeadingPitchRoll.fromDegrees(0.0, 0.0, 0.0, new HeadingPitchRoll());
+// 	var trs = new TranslationRotationScale();
+
+// 	//以modelMatrix(飞机)中心为原点的座标系的xyz轴位置偏移
+// 	trs.translation = Cartesian3.fromElements(2.5, 3.5, 1.0, new Cartesian3());
+// 	trs.rotation = Quaternion.fromHeadingPitchRoll(hpr, new Quaternion());
+// 	return Matrix4.fromTranslationRotationScale(trs, new Matrix4());
+// }
+
+// var particleSystem = viewer.scene.primitives.add(new ParticleSystem({
+//     image : '../Apps/SampleData/fire.png',
+//     startScale : 1.0,
+//     endScale : 4.0,
+//     minimumParticleLife : 1.0,
+//     maximumParticleLife : 1.5,
+//     speed : 5.0,
+//     // width : 20,
+//     // height : 20,
+//     lifetime : 16.0,
+//     //主模型参数(位置)
+//     modelMatrix : computeModelMatrix(entity, JulianDate.now()),
+//     // 发射器参数
+//     emitter : new CircleEmitter(0.5),
+//     emissionRate : 5.0,
+//     emitterModelMatrix : computeEmitterModelMatrix(),
+//     //颜色
+//     startColor: Color.RED.withAlpha(0.7),
+//     endColor: Color.YELLOW.withAlpha(0.3),
+//     // forces: [applyGravity]
+// }));
+
+// function fireadd() {
+// 	var firejingdu = 116.6554885;
+// 	var fireweidu = 39.5454545;
+// 	var fireheight = 20;
+// 	var firedata;
+// 	var boolen = true;
+// 	//获取事件触发所在的  html Canvas容器
+// 	let firecanvas = viewer.scene.canvas;
+// 	var handler = new ScreenSpaceEventHandler(firecanvas);
+// 	handler.setInputAction(function (evt: any) {
+// 		var pickedObject = viewer.scene.pick(evt.position);
+// 		var cartesian = viewer.scene.pickPosition(evt.position);
+// 		if (defined(cartesian)) {
+// 			var cartographic = Cartographic.fromCartesian(cartesian);
+// 			var lng = Math.toDegrees(cartographic.longitude);
+// 			var lat = Math.toDegrees(cartographic.latitude);
+// 			// var height = cartographic.height; //模型高度
+// 			// var lat = 121.58566;
+// 			// var lng = 38.9129980676015;
+// 			var height = 2000;
+// 			firedata = new ParticleSystem({
+// 				// image: './file/texture/fire1.png',
+// 				startColor: Color.RED.withAlpha(0.7),
+// 				endColor: Color.YELLOW.withAlpha(0.3),
+// 				startScale: 10,
+// 				endScale: 10,
+// 				//设定粒子寿命可能持续时间的最小限值(以秒为单位)，在此限值之上将随机选择粒子的实际寿命。
+// 				minimumParticleLife: 1,
+// 				maximumParticleLife: 6,
+// 				minimumSpeed: 1,
+// 				maximumSpeed: 4,
+// 				imageSize: new Cartesian2(100, 10),
+// 				// Particles per second.
+// 				emissionRate: 4,
+// 				lifetime: 160.0,
+// 				// emitter: new CircleEmitter(5.0),
+// 				emitter: new SphereEmitter(5.0),
+// 				modelMatrix: Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(lng, lat, height)), //从模型转化成世界坐标
+// 			});
+// 			console.log(firedata.modelMatrix);
+// 			handler.setInputAction(function (click: any) {
+// 				boolen = false;
+// 			}, ScreenSpaceEventType.RIGHT_CLICK);
+// 			var firetileset1 = viewer.scene.primitives.add(firedata);
+// 			firetileset1.show = boolen;
+// 		}
+// 	}, ScreenSpaceEventType.LEFT_CLICK);
+// }
+
+// fireadd();
+
+/**
+ * 地形开挖示例
+ */
+// let isClipping = false;
+// const one = [
+// 	[121.58336853027344, 38.91507295013191],
+// 	[121.59916137695312, 38.970623120820174],
+// 	[121.57100891113281, 38.9994303704904],
+// 	[121.55401733398438, 38.96763959537609],
+// 	[121.5534, 38.938],
+// ];
+
+// const two = [
+// 	[121.4974, 38.9021],
+// 	[121.5295, 38.8753],
+// 	[121.5743, 38.8661],
+// 	[121.6132, 38.8963],
+// 	[121.542582, 38.958825],
+// 	[121.547712, 38.901201],
+// ];
+
+// const aaa = [];
+// two.forEach(
+//   (v) => {
+//     aaa.push(Cartesian3.fromDegrees(v[0], v[1]));
+//   }
+// );
+
+// let terrainClipPlan = new TerrainClipPlan(viewer, {
+//   height: 200,
+//   splitNum: 1000,
+//   bottomImg: '../file/texture/poly-soil.jpg',
+//   wallImg: '../file/texture/poly-stone.jpg'
+// });
+// terrainClipPlan.updateData(aaa)
+
+// const aa = (async () => {
+//   console.log(11111)
+//   return 1;
+// })().then(v => {
+//   console.log(v);
+//   return 11;
+// }).then(v => {
+//   console.log(v)
+// });
+
+// const bb = (async () => {
+//   console.log(22222)
+//   return 2;
+// })().then(v => {
+//   console.log(v);
+//   let sdfsf = (async () => {
+//     console.log("YYYY");
+//     return "yyyyy";
+//   })().then(v => { console.log(v) });
+//   return 22
+// }).then(v => {
+//   console.log(v)
+// });
+
+// console.log(3333);
+
+// 挖方
+enter(viewer, { edgeWidth: 5, edgeColor: Color.RED });
+document.onkeyup = function (event) {
+	if (event.key === 'z') removeAll();
+	if (event.key === 'd')
+		draw()
+			.then(collection => console.log(collection, '%%%%%%%%%%%%%%'))
+			.catch(e => console.log(e));
+	if (event.key === 'e') exit();
+};
+
+// 绘制等值面
+import { draw as temperatrue_draw } from '../dev/Temperatrue';
+
+const mapCenter = [121.58, 38.91];
+//生成测试数据 [{lat:30,lng:104,value:500},[{lat:30,lng:104,value:500}]]
+const dataset: { lat: number; lng: number; value: number }[] = [];
+for (let i = 0; i < 100; i++) {
+	dataset.push({
+		lng: mapCenter[0] + window.Math.random() * 0.1 - 0.05,
+		lat: mapCenter[1] + window.Math.random() * 0.1 - 0.05,
+		value: window.Math.random() * 100,
+	});
+}
+
+// temperatrue_draw(viewer, dataset, [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], {
+// 	lon_flag: 'lng',
+// 	lat_flag: 'lat',
+// 	value_flag: 'value',
+// }).then(v => console.log(v));
+
+// 夜视效果
+import { enableNightVision } from '../dev/PostProcess';
+import { createBuildingShaderFlood, createBuildingShaderNight } from '../dev/buildingsTexture';
+import WebMapTileServiceImageryProvider from 'cesium/Source/Scene/WebMapTileServiceImageryProvider';
+import { gltf_loader } from './FloodModelGLTF';
+export const d3 = () => {
+	enableNightVision(viewer);
+};
+// d3();
+
+// 加载gltf模型
+// gltf_loader(viewer, '../file/model/scene.glb', 121.58, 38.912, 10, Color.YELLOW);
+
