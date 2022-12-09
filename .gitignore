@@ -24,8 +24,8 @@ dist-ssr
 *.sln
 *.sw?
 
-*.ts
-*.json
-*.js
-.env.development
-dev.html
+./*.ts
+./*.json
+./*.js
+./.env.development
+./dev.html

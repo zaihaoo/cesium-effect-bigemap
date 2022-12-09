@@ -1,0 +1,18 @@
+{
+    "entryPoints": [
+        "Src/main.ts"
+    ],
+    // "includes": [
+    //     "src/*.ts"
+    // ],
+    "out": "Docs",
+    "readme": "none",
+    "includeVersion": true,
+    // "darkHighlightTheme": "github-dark",
+    "disableSources": false,
+    "hideGenerator": true,
+    "visibilityFilters": {},
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "excludeProtected": true
+}
