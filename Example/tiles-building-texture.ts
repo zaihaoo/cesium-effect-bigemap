@@ -23,7 +23,7 @@ let _style_night: CustomShader;
 
 const _loadTestData = () => {
 	_tileset = new Cesium3DTileset({
-		url: 'Example/File/Build/tileset.json', //数据地址
+		url: 'Assets/File/Build/tileset.json', //数据地址
 		maximumScreenSpaceError: 2, //最大的屏幕空间误差
 		show: true,
 	});

@@ -7,7 +7,7 @@ let _style_flood;
 let _style_night;
 const _loadTestData = () => {
     _tileset = new Cesium3DTileset({
-        url: 'File/Build/tileset.json',
+        url: 'Assets/File/Build/tileset.json',
         maximumScreenSpaceError: 2,
         show: true,
     });

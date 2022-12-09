@@ -5,7 +5,7 @@ let _data_source: GeoJsonDataSource;
 let _style_$1: number;
 let _color: Color;
 const _loadTestData = async () => {
-	_data_source = await GeoJsonDataSource.load('Example/File/Model/way.geojson');
+	_data_source = await GeoJsonDataSource.load('Assets/File/Model/way.geojson');
 	_style_$1 = RoadWay.ThroughStyle;
 	_color = new Color(0, 1, 0, 1);
 };

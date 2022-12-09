@@ -35,7 +35,7 @@ export default {
   // 配置选项
   server: {
     hmr: false,
-    open: '/dev.html'
+    // open: '/dev.html'
   },
   build: {
     outDir: "Dist",
@@ -47,7 +47,7 @@ export default {
     },
     sourcemap: true
   },
-  publicDir: "Public",
+  publicDir: "Assets",
   plugins: [
     _initHTMLPlugin(),
   ],

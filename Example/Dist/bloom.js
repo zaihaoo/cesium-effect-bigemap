@@ -9,7 +9,7 @@ const _loadTestData = () => {
     const modelMatrix2 = Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(121.6, 38.9, 0));
     // gltf
     _gltf_model = _viewer.scene.primitives.add(Model.fromGltf({
-        url: 'File/BOX2.glb',
+        url: 'Assets/File/BOX2.glb',
         modelMatrix: modelMatrix1,
         scale: 10,
         id: 'house',

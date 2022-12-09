@@ -25251,6 +25251,45 @@ export class Temperatrue {
 }
 
 /**
+ * 创建四棱锥图标
+ * @param options - 配置参数
+ * @param options.position - 经纬度坐标(角度)
+ * @param [options.color] - 颜色
+ * @param [options.scale] - 缩放比例
+ * @param [options.fill] - 填充
+ * @param [options.show] - 开启展示
+ */
+export class Tetrahedron {
+    constructor(options: {
+        position: Cartesian3;
+        color?: Color;
+        scale?: Cartesian3;
+        fill?: boolean;
+        show?: boolean;
+    });
+    /**
+     * 开启动画
+     */
+    startAnimate(): void;
+    /**
+     * 关闭动画
+     */
+    closeAnimate(): void;
+    /**
+     * 开启展示
+     */
+    show: boolean;
+    /**
+     * 填充
+     */
+    fill: boolean;
+    /**
+     * 颜色
+     */
+    color: Color;
+}
+
+/**
  * 获取3DTiles建筑泛光材质
  * @param [options] - 参数对象
  * @param [options.color] - 颜色
@@ -45101,6 +45140,7 @@ declare module "cesium/Source/Expand/SkyBoxControl" { import { SkyBoxControl } f
 declare module "cesium/Source/Expand/SpaceLine" { import { SpaceLine } from 'cesium'; export default SpaceLine; }
 declare module "cesium/Source/Expand/SpaceLineMaterialAppearance" { import { SpaceLineMaterialAppearance } from 'cesium'; export default SpaceLineMaterialAppearance; }
 declare module "cesium/Source/Expand/Temperatrue" { import { Temperatrue } from 'cesium'; export default Temperatrue; }
+declare module "cesium/Source/Expand/Tetrahedron" { import { Tetrahedron } from 'cesium'; export default Tetrahedron; }
 declare module "cesium/Source/Expand/TilesBuildingTextureFlood" { import { TilesBuildingTextureFlood } from 'cesium'; export default TilesBuildingTextureFlood; }
 declare module "cesium/Source/Expand/TilesBuildingTextureNight" { import { TilesBuildingTextureNight } from 'cesium'; export default TilesBuildingTextureNight; }
 declare module "cesium/Source/Scene/Appearance" { import { Appearance } from 'cesium'; export default Appearance; }

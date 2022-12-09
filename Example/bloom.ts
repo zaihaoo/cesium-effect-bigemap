@@ -30,7 +30,7 @@ const _loadTestData = () => {
 	// gltf
 	_gltf_model = _viewer.scene.primitives.add(
 		Model.fromGltf({
-			url: 'Example/File/BOX2.glb',
+			url: 'Assets/File/BOX2.glb',
 			modelMatrix: modelMatrix1,
 			scale: 10,
 			id: 'house',
