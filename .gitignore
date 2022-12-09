@@ -29,3 +29,4 @@ dist-ssr
 /*.js
 /.env.development
 /dev.html
+/*.glsl
