@@ -24940,6 +24940,94 @@ export class WallGraphics {
 }
 
 /**
+ * A {@link MaterialProperty} that maps to solid color {@link Material} uniforms.
+ * @param [options] - 参数对象
+ * @param [options.color] - 颜色
+ * @param [options.speed] - 速度
+ */
+export class CircleRollMaterialProperty {
+    constructor(options?: {
+        color?: Color;
+        speed?: number;
+    });
+    /**
+     * Gets the {@link Material} type at the provided time.
+     * @param time - The time for which to retrieve the type.
+     * @returns The type of material.
+     */
+    getType(time: JulianDate): string;
+    /**
+     * Gets the value of the property at the provided time.
+     * @param time - The time for which to retrieve the value.
+     * @param [result] - The object to store the value into, if omitted, a new instance is created and returned.
+     * @returns The modified result parameter or a new instance if the result parameter was not supplied.
+     */
+    getValue(time: JulianDate, result?: any): any;
+    /**
+     * Compares this property to the provided property and returns
+    <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [other] - The other property.
+     * @returns <code>true</code> if left and right are equal, <code>false</code> otherwise.
+     */
+    equals(other?: Property): boolean;
+    /**
+     * Gets a value indicating if this property is constant.  A property is considered
+    constant if getValue always returns the same result for the current definition.
+     */
+    readonly isConstant: boolean;
+    /**
+     * Gets the event that is raised whenever the definition of this property changes.
+    The definition is considered to have changed if a call to getValue would return
+    a different result for the same time.
+     */
+    readonly definitionChanged: Event;
+}
+
+/**
+ * A {@link MaterialProperty} that maps to solid color {@link Material} uniforms.
+ * @param [options] - 参数对象
+ * @param [options.color] - 颜色
+ * @param [options.speed] - 速度
+ */
+export class CylinderBlurMaterialProperty {
+    constructor(options?: {
+        color?: Color;
+        speed?: number;
+    });
+    /**
+     * Gets the {@link Material} type at the provided time.
+     * @param time - The time for which to retrieve the type.
+     * @returns The type of material.
+     */
+    getType(time: JulianDate): string;
+    /**
+     * Gets the value of the property at the provided time.
+     * @param time - The time for which to retrieve the value.
+     * @param [result] - The object to store the value into, if omitted, a new instance is created and returned.
+     * @returns The modified result parameter or a new instance if the result parameter was not supplied.
+     */
+    getValue(time: JulianDate, result?: any): any;
+    /**
+     * Compares this property to the provided property and returns
+    <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [other] - The other property.
+     * @returns <code>true</code> if left and right are equal, <code>false</code> otherwise.
+     */
+    equals(other?: Property): boolean;
+    /**
+     * Gets a value indicating if this property is constant.  A property is considered
+    constant if getValue always returns the same result for the current definition.
+     */
+    readonly isConstant: boolean;
+    /**
+     * Gets the event that is raised whenever the definition of this property changes.
+    The definition is considered to have changed if a call to getValue would return
+    a different result for the same time.
+     */
+    readonly definitionChanged: Event;
+}
+
+/**
  * 创建电弧
  * @param options - 参数对象
  * @param options.position - 经纬度坐标
@@ -45130,6 +45218,8 @@ declare module "cesium/Source/DataSources/VelocityVectorProperty" { import { Vel
 declare module "cesium/Source/DataSources/Visualizer" { import { Visualizer } from 'cesium'; export default Visualizer; }
 declare module "cesium/Source/DataSources/WallGeometryUpdater" { import { WallGeometryUpdater } from 'cesium'; export default WallGeometryUpdater; }
 declare module "cesium/Source/DataSources/WallGraphics" { import { WallGraphics } from 'cesium'; export default WallGraphics; }
+declare module "cesium/Source/Expand/CircleRollMaterialProperty" { import { CircleRollMaterialProperty } from 'cesium'; export default CircleRollMaterialProperty; }
+declare module "cesium/Source/Expand/CylinderBlurMaterialProperty" { import { CylinderBlurMaterialProperty } from 'cesium'; export default CylinderBlurMaterialProperty; }
 declare module "cesium/Source/Expand/ElectricArc" { import { ElectricArc } from 'cesium'; export default ElectricArc; }
 declare module "cesium/Source/Expand/ElectricArcMaterialAppearance" { import { ElectricArcMaterialAppearance } from 'cesium'; export default ElectricArcMaterialAppearance; }
 declare module "cesium/Source/Expand/Heatmap3D" { import { Heatmap3D } from 'cesium'; export default Heatmap3D; }
