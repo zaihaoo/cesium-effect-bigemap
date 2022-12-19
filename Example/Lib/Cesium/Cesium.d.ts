@@ -25028,6 +25028,43 @@ export class CylinderBlurMaterialProperty {
 }
 
 /**
+ * 创建发光圆锥体标识
+ * @param options - 参数对象
+ * @param options.position - 经纬度坐标
+ * @param options.radius - 外圆半径
+ * @param options.height - 圆锥高度
+ * @param [options.color] - 颜色
+ * @param [options.speed] - 速度
+ * @param [is_destroy] - 当属性变化时是否自动删除之前的图元
+ * @param [func] - 当图元变化时的回调函数 (prev_primitive,primitive,change_key,value) => {} 该函数有四个参数 prev_primitive-更新之前的图元 primitive-更新后的图元 change_key修改的键名 value修改的键值
+ */
+export class CylinderFlashMark {
+    constructor(options: {
+        position: number[];
+        radius: number;
+        height: number;
+        color?: Color;
+        speed?: number;
+    }, is_destroy?: boolean, func?: (...params: any[]) => any);
+    /**
+     * 销毁对象
+     */
+    destroy(): void;
+    /**
+     * 坐标
+     */
+    position: number[];
+    /**
+     * 颜色
+     */
+    color: Color;
+    /**
+     * 图元
+     */
+    readonly primitive: Entity[];
+}
+
+/**
  * 创建电弧
  * @param options - 参数对象
  * @param options.position - 经纬度坐标
@@ -45220,6 +45257,7 @@ declare module "cesium/Source/DataSources/WallGeometryUpdater" { import { WallGe
 declare module "cesium/Source/DataSources/WallGraphics" { import { WallGraphics } from 'cesium'; export default WallGraphics; }
 declare module "cesium/Source/Expand/CircleRollMaterialProperty" { import { CircleRollMaterialProperty } from 'cesium'; export default CircleRollMaterialProperty; }
 declare module "cesium/Source/Expand/CylinderBlurMaterialProperty" { import { CylinderBlurMaterialProperty } from 'cesium'; export default CylinderBlurMaterialProperty; }
+declare module "cesium/Source/Expand/CylinderFlashMark" { import { CylinderFlashMark } from 'cesium'; export default CylinderFlashMark; }
 declare module "cesium/Source/Expand/ElectricArc" { import { ElectricArc } from 'cesium'; export default ElectricArc; }
 declare module "cesium/Source/Expand/ElectricArcMaterialAppearance" { import { ElectricArcMaterialAppearance } from 'cesium'; export default ElectricArcMaterialAppearance; }
 declare module "cesium/Source/Expand/Heatmap3D" { import { Heatmap3D } from 'cesium'; export default Heatmap3D; }

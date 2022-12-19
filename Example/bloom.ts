@@ -25,8 +25,8 @@ let _handler: ScreenSpaceEventHandler;
 let _last: any[];
 
 const _loadTestData = () => {
-	const modelMatrix1 = Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(121.58, 38.91, 0));
-	const modelMatrix2 = Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(121.6, 38.9, 0));
+	const modelMatrix1 = Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(121.48, 38.91, 0));
+	const modelMatrix2 = Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(121.5, 38.9, 0));
 	// gltf
 	_gltf_model = _viewer.scene.primitives.add(
 		Model.fromGltf({
