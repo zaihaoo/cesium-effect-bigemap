@@ -172,7 +172,7 @@ export const example = (viewer: Viewer, gui: GUI) => {
 	_style_night = TilesBuildingTextureNight();
 	_viewer = viewer;
 	_style = _Style.Flood;
-	_updateTileset(false);
+	_updateTileset(true);
 
 	const options = {
 		power: false,

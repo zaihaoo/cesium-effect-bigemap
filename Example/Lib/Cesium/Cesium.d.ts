@@ -25431,6 +25431,48 @@ export function TilesBuildingTextureFlood(options?: {
 export function TilesBuildingTextureNight(): CustomShader;
 
 /**
+ * 可视域分析。
+ * @param viewer - Cesium三维视窗。
+ * @param options - 选项。
+ * @param options.viewPosition - 观测点位置。
+ * @param [options.viewPositionEnd] - 最远观测点位置（如果设置了观测距离，这个属性可以不设置）。
+ * @param [options.viewDistance] - 观测距离（单位`米`，默认值100）。
+ * @param [options.viewHeading] - 航向角（单位`度`，默认值0）。
+ * @param [options.viewPitch] - 俯仰角（单位`度`，默认值0）。
+ * @param [options.horizontalViewAngle] - 可视域水平夹角（单位`度`，默认值90）。
+ * @param [options.verticalViewAngle] - 可视域垂直夹角（单位`度`，默认值60）。
+ * @param [options.visibleAreaColor] - 可视区域颜色（默认值`绿色`）。
+ * @param [options.invisibleAreaColor] - 不可视区域颜色（默认值`红色`）。
+ * @param [options.enabled] - 阴影贴图是否可用。  true
+ * @param [options.softShadows] - 是否启用柔和阴影。 true
+ * @param [options.size] - 每个阴影贴图的大小。2048
+ */
+export class ViewShed {
+    constructor(viewer: Viewer, options: {
+        viewPosition: Cartesian3;
+        viewPositionEnd?: Cartesian3;
+        viewDistance?: number;
+        viewHeading?: number;
+        viewPitch?: number;
+        horizontalViewAngle?: number;
+        verticalViewAngle?: number;
+        visibleAreaColor?: Color;
+        invisibleAreaColor?: Color;
+        enabled?: boolean;
+        softShadows?: boolean;
+        size?: boolean;
+    });
+    /**
+     * 更新可视域分析
+     */
+    update(): void;
+    /**
+     * 清除可视域分析
+     */
+    clear(): void;
+}
+
+/**
  * The data type of a pixel.
  */
 export enum PixelDatatype {
@@ -45271,6 +45313,7 @@ declare module "cesium/Source/Expand/Temperatrue" { import { Temperatrue } from 
 declare module "cesium/Source/Expand/Tetrahedron" { import { Tetrahedron } from 'cesium'; export default Tetrahedron; }
 declare module "cesium/Source/Expand/TilesBuildingTextureFlood" { import { TilesBuildingTextureFlood } from 'cesium'; export default TilesBuildingTextureFlood; }
 declare module "cesium/Source/Expand/TilesBuildingTextureNight" { import { TilesBuildingTextureNight } from 'cesium'; export default TilesBuildingTextureNight; }
+declare module "cesium/Source/Expand/ViewShed" { import { ViewShed } from 'cesium'; export default ViewShed; }
 declare module "cesium/Source/Scene/Appearance" { import { Appearance } from 'cesium'; export default Appearance; }
 declare module "cesium/Source/Scene/ArcGisMapServerImageryProvider" { import { ArcGisMapServerImageryProvider } from 'cesium'; export default ArcGisMapServerImageryProvider; }
 declare module "cesium/Source/Scene/Billboard" { import { Billboard } from 'cesium'; export default Billboard; }
