@@ -24941,6 +24941,50 @@ export class WallGraphics {
 
 /**
  * A {@link MaterialProperty} that maps to solid color {@link Material} uniforms.
+ * @param options - 参数对象
+ * @param options.image - 贴图地址
+ * @param [options.color] - 颜色
+ */
+export class AdministrationTextureMaterialProperty {
+    constructor(options: {
+        image: string;
+        color?: Color;
+    });
+    /**
+     * Gets the {@link Material} type at the provided time.
+     * @param time - The time for which to retrieve the type.
+     * @returns The type of material.
+     */
+    getType(time: JulianDate): string;
+    /**
+     * Gets the value of the property at the provided time.
+     * @param time - The time for which to retrieve the value.
+     * @param [result] - The object to store the value into, if omitted, a new instance is created and returned.
+     * @returns The modified result parameter or a new instance if the result parameter was not supplied.
+     */
+    getValue(time: JulianDate, result?: any): any;
+    /**
+     * Compares this property to the provided property and returns
+    <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [other] - The other property.
+     * @returns <code>true</code> if left and right are equal, <code>false</code> otherwise.
+     */
+    equals(other?: Property): boolean;
+    /**
+     * Gets a value indicating if this property is constant.  A property is considered
+    constant if getValue always returns the same result for the current definition.
+     */
+    readonly isConstant: boolean;
+    /**
+     * Gets the event that is raised whenever the definition of this property changes.
+    The definition is considered to have changed if a call to getValue would return
+    a different result for the same time.
+     */
+    readonly definitionChanged: Event;
+}
+
+/**
+ * A {@link MaterialProperty} that maps to solid color {@link Material} uniforms.
  * @param [options] - 参数对象
  * @param [options.color] - 颜色
  * @param [options.speed] - 速度
@@ -25142,6 +25186,16 @@ export function ElectricArcMaterialAppearance(options?: {
 }): MaterialAppearance;
 
 /**
+ * 获取球体环绕线
+ * @param center - 球心笛卡尔坐标
+ * @param radius - 球的半径
+ * @param [color] - 线的颜色
+ * @param [line_count = 3] - 线的数量
+ * @returns 墙体冒泡材质
+ */
+export function EncircleLine(center: Cartesian3, radius: number, color?: Color, line_count?: number): Primitive;
+
+/**
  * 创建三维热力图
  * @param options.source_points - 热力图数据源
 example:
@@ -25174,6 +25228,52 @@ export class Heatmap3D {
      * @param radius - 热力图聚类半径
      */
     updateRadius(radius: number): void;
+}
+
+/**
+ * A {@link MaterialProperty} that maps to polyline glow {@link Material} uniforms.
+ * @param [options] - Object with the following properties:
+ * @param [options.speed = 6] - 速度
+ */
+export class PolylineFocusMaterialProperty {
+    constructor(options?: {
+        speed?: Property | number;
+    });
+    /**
+     * Gets a value indicating if this property is constant.  A property is considered
+    constant if getValue always returns the same result for the current definition.
+     */
+    readonly isConstant: boolean;
+    /**
+     * Gets the event that is raised whenever the definition of this property changes.
+    The definition is considered to have changed if a call to getValue would return
+    a different result for the same time.
+     */
+    readonly definitionChanged: Event;
+    /**
+     * 速度
+     */
+    speed: Property | undefined;
+    /**
+     * Gets the {@link Material} type at the provided time.
+     * @param time - The time for which to retrieve the type.
+     * @returns The type of material.
+     */
+    getType(time: JulianDate): string;
+    /**
+     * Gets the value of the property at the provided time.
+     * @param time - The time for which to retrieve the value.
+     * @param [result] - The object to store the value into, if omitted, a new instance is created and returned.
+     * @returns The modified result parameter or a new instance if the result parameter was not supplied.
+     */
+    getValue(time: JulianDate, result?: any): any;
+    /**
+     * Compares this property to the provided property and returns
+    <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [other] - The other property.
+     * @returns <code>true</code> if left and right are equal, <code>false</code> otherwise.
+     */
+    equals(other?: Property): boolean;
 }
 
 /**
@@ -25463,14 +25563,40 @@ export class ViewShed {
         size?: boolean;
     });
     /**
-     * 更新可视域分析
+     * 添加可视域分析
      */
-    update(): void;
+    add(): void;
     /**
      * 清除可视域分析
      */
     clear(): void;
 }
+
+/**
+ * 获取墙体冒泡材质
+ * @param [options] - 参数对象
+ * @param [options.color] - 颜色
+ * @param [options.ratio] - 墙体宽高比
+ * @param [options.speed] - 运动速度
+ * @returns 墙体冒泡材质
+ */
+export function WallBubblingMaterialAppearance(options?: {
+    color?: Color;
+    ratio?: number;
+    speed?: number;
+}): MaterialAppearance;
+
+/**
+ * 获取墙体渐变材质
+ * @param [options] - 参数对象
+ * @param [options.color] - 颜色
+ * @param [options.ratio] - 墙体宽高比
+ * @returns 墙体渐变材质
+ */
+export function WallGraduallyMaterialAppearance(options?: {
+    color?: Color;
+    ratio?: number;
+}): MaterialAppearance;
 
 /**
  * The data type of a pixel.
@@ -45297,12 +45423,15 @@ declare module "cesium/Source/DataSources/VelocityVectorProperty" { import { Vel
 declare module "cesium/Source/DataSources/Visualizer" { import { Visualizer } from 'cesium'; export default Visualizer; }
 declare module "cesium/Source/DataSources/WallGeometryUpdater" { import { WallGeometryUpdater } from 'cesium'; export default WallGeometryUpdater; }
 declare module "cesium/Source/DataSources/WallGraphics" { import { WallGraphics } from 'cesium'; export default WallGraphics; }
+declare module "cesium/Source/Expand/AdministrationTextureMaterialProperty" { import { AdministrationTextureMaterialProperty } from 'cesium'; export default AdministrationTextureMaterialProperty; }
 declare module "cesium/Source/Expand/CircleRollMaterialProperty" { import { CircleRollMaterialProperty } from 'cesium'; export default CircleRollMaterialProperty; }
 declare module "cesium/Source/Expand/CylinderBlurMaterialProperty" { import { CylinderBlurMaterialProperty } from 'cesium'; export default CylinderBlurMaterialProperty; }
 declare module "cesium/Source/Expand/CylinderFlashMark" { import { CylinderFlashMark } from 'cesium'; export default CylinderFlashMark; }
 declare module "cesium/Source/Expand/ElectricArc" { import { ElectricArc } from 'cesium'; export default ElectricArc; }
 declare module "cesium/Source/Expand/ElectricArcMaterialAppearance" { import { ElectricArcMaterialAppearance } from 'cesium'; export default ElectricArcMaterialAppearance; }
+declare module "cesium/Source/Expand/EncircleLine" { import { EncircleLine } from 'cesium'; export default EncircleLine; }
 declare module "cesium/Source/Expand/Heatmap3D" { import { Heatmap3D } from 'cesium'; export default Heatmap3D; }
+declare module "cesium/Source/Expand/PolylineFocusMaterialProperty" { import { PolylineFocusMaterialProperty } from 'cesium'; export default PolylineFocusMaterialProperty; }
 declare module "cesium/Source/Expand/RoadWay" { import { RoadWay } from 'cesium'; export default RoadWay; }
 declare module "cesium/Source/Expand/RoadWayThroughMaterial" { import { RoadWayThroughMaterial } from 'cesium'; export default RoadWayThroughMaterial; }
 declare module "cesium/Source/Expand/RoadWayTwinkleMaterial" { import { RoadWayTwinkleMaterial } from 'cesium'; export default RoadWayTwinkleMaterial; }
@@ -45314,6 +45443,8 @@ declare module "cesium/Source/Expand/Tetrahedron" { import { Tetrahedron } from 
 declare module "cesium/Source/Expand/TilesBuildingTextureFlood" { import { TilesBuildingTextureFlood } from 'cesium'; export default TilesBuildingTextureFlood; }
 declare module "cesium/Source/Expand/TilesBuildingTextureNight" { import { TilesBuildingTextureNight } from 'cesium'; export default TilesBuildingTextureNight; }
 declare module "cesium/Source/Expand/ViewShed" { import { ViewShed } from 'cesium'; export default ViewShed; }
+declare module "cesium/Source/Expand/WallBubblingMaterialAppearance" { import { WallBubblingMaterialAppearance } from 'cesium'; export default WallBubblingMaterialAppearance; }
+declare module "cesium/Source/Expand/WallGraduallyMaterialAppearance" { import { WallGraduallyMaterialAppearance } from 'cesium'; export default WallGraduallyMaterialAppearance; }
 declare module "cesium/Source/Scene/Appearance" { import { Appearance } from 'cesium'; export default Appearance; }
 declare module "cesium/Source/Scene/ArcGisMapServerImageryProvider" { import { ArcGisMapServerImageryProvider } from 'cesium'; export default ArcGisMapServerImageryProvider; }
 declare module "cesium/Source/Scene/Billboard" { import { Billboard } from 'cesium'; export default Billboard; }
