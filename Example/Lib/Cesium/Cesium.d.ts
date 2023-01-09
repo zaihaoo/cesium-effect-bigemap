@@ -25196,6 +25196,33 @@ export function ElectricArcMaterialAppearance(options?: {
 export function EncircleLine(center: Cartesian3, radius: number, color?: Color, line_count?: number): Primitive;
 
 /**
+ * 初始化近地雾化效果
+ * @param viewer - Viewer对象
+ * @param [color] - 雾化的颜色
+ * @param [fogParams] - 雾化效果参数 x:near的深度值 y:near的雾化效果阈值 z:far的深度值 w:far的雾化效果阈值 new Cartesian4(10.0, 0.0, 3000, 1.0)
+ * @param [cameraHeight = 10000] - 近地摄像机高度(雾化效果的生效高度)
+ */
+export class FogControl {
+    constructor(viewer: Viewer, color?: Color, fogParams?: Cartesian4, cameraHeight?: number);
+    /**
+     * 开启近地雾化效果
+     */
+    enable(): void;
+    /**
+     * 关闭近地雾化效果
+     */
+    disable(): void;
+    /**
+     * 销毁对象
+     */
+    destroy(): void;
+    /**
+     * 雾化的颜色
+     */
+    color: Color;
+}
+
+/**
  * 创建三维热力图
  * @param options.source_points - 热力图数据源
 example:
@@ -45479,6 +45506,7 @@ declare module "cesium/Source/Expand/CylinderFlashMark" { import { CylinderFlash
 declare module "cesium/Source/Expand/ElectricArc" { import { ElectricArc } from 'cesium'; export default ElectricArc; }
 declare module "cesium/Source/Expand/ElectricArcMaterialAppearance" { import { ElectricArcMaterialAppearance } from 'cesium'; export default ElectricArcMaterialAppearance; }
 declare module "cesium/Source/Expand/EncircleLine" { import { EncircleLine } from 'cesium'; export default EncircleLine; }
+declare module "cesium/Source/Expand/FogControl" { import { FogControl } from 'cesium'; export default FogControl; }
 declare module "cesium/Source/Expand/Heatmap3D" { import { Heatmap3D } from 'cesium'; export default Heatmap3D; }
 declare module "cesium/Source/Expand/PolylineArrowsSlideMaterialProperty" { import { PolylineArrowsSlideMaterialProperty } from 'cesium'; export default PolylineArrowsSlideMaterialProperty; }
 declare module "cesium/Source/Expand/PolylineFocusMaterialProperty" { import { PolylineFocusMaterialProperty } from 'cesium'; export default PolylineFocusMaterialProperty; }

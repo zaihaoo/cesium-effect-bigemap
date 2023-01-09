@@ -14,7 +14,7 @@ export const example = (viewer, gui) => {
         .add(options, 'power')
         .name('是否开启')
         .onChange(v => {
-            v ? viewshed.add() : viewshed.clear();
-        });
+        v ? viewshed.add() : viewshed.clear();
+    });
 };
 //# sourceMappingURL=view-shed.js.map
