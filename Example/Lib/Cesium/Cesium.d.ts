@@ -25231,6 +25231,55 @@ export class Heatmap3D {
 }
 
 /**
+ * A {@link MaterialProperty} that maps to solid color {@link Material} uniforms.
+ * @param [color] - 颜色
+ * @param [count] - 箭头数量
+ * @param [duration] - 时间
+ */
+export class PolylineArrowsSlideMaterialProperty {
+    constructor(color?: Color, count?: number, duration?: number);
+    /**
+     * Gets the {@link Material} type at the provided time.
+     * @param time - The time for which to retrieve the type.
+     * @returns The type of material.
+     */
+    getType(time: JulianDate): string;
+    /**
+     * Gets the value of the property at the provided time.
+     * @param time - The time for which to retrieve the value.
+     * @param [result] - The object to store the value into, if omitted, a new instance is created and returned.
+     * @returns The modified result parameter or a new instance if the result parameter was not supplied.
+     */
+    getValue(time: JulianDate, result?: any): any;
+    /**
+     * Compares this property to the provided property and returns
+    <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [other] - The other property.
+     * @returns <code>true</code> if left and right are equal, <code>false</code> otherwise.
+     */
+    equals(other?: Property): boolean;
+    /**
+     * Gets a value indicating if this property is constant.  A property is considered
+    constant if getValue always returns the same result for the current definition.
+     */
+    readonly isConstant: boolean;
+    /**
+     * Gets the event that is raised whenever the definition of this property changes.
+    The definition is considered to have changed if a call to getValue would return
+    a different result for the same time.
+     */
+    readonly definitionChanged: Event;
+    /**
+     * Gets or sets the {@link Color} {@link Property}.
+     */
+    color: Property | undefined;
+    /**
+     * Gets or sets the {@link Number} {@link Property}.
+     */
+    count: Property | undefined;
+}
+
+/**
  * A {@link MaterialProperty} that maps to polyline glow {@link Material} uniforms.
  * @param [options] - Object with the following properties:
  * @param [options.speed = 6] - 速度
@@ -45431,6 +45480,7 @@ declare module "cesium/Source/Expand/ElectricArc" { import { ElectricArc } from 
 declare module "cesium/Source/Expand/ElectricArcMaterialAppearance" { import { ElectricArcMaterialAppearance } from 'cesium'; export default ElectricArcMaterialAppearance; }
 declare module "cesium/Source/Expand/EncircleLine" { import { EncircleLine } from 'cesium'; export default EncircleLine; }
 declare module "cesium/Source/Expand/Heatmap3D" { import { Heatmap3D } from 'cesium'; export default Heatmap3D; }
+declare module "cesium/Source/Expand/PolylineArrowsSlideMaterialProperty" { import { PolylineArrowsSlideMaterialProperty } from 'cesium'; export default PolylineArrowsSlideMaterialProperty; }
 declare module "cesium/Source/Expand/PolylineFocusMaterialProperty" { import { PolylineFocusMaterialProperty } from 'cesium'; export default PolylineFocusMaterialProperty; }
 declare module "cesium/Source/Expand/RoadWay" { import { RoadWay } from 'cesium'; export default RoadWay; }
 declare module "cesium/Source/Expand/RoadWayThroughMaterial" { import { RoadWayThroughMaterial } from 'cesium'; export default RoadWayThroughMaterial; }

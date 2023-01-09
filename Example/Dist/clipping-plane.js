@@ -46,24 +46,24 @@ export const example = (viewer, gui) => {
         .add(options, 'removeAll')
         .name('删除所有')
         .onChange(async (_) => {
-        batch_index = undefined;
-        options.batch = false;
-    });
+            batch_index = undefined;
+            options.batch = false;
+        });
     folder
         .add(options, 'batch')
         .name('顶点导入开挖')
         .listen()
         .onChange(async (v) => {
-        const ctime = (batch_time = getTimestamp());
-        batch_index !== undefined && (await MultiClippingPlane.remove(batch_index));
-        batch_index = undefined;
-        if (v) {
-            batch_index = await MultiClippingPlane.draw(positions);
-            if (ctime !== batch_time) {
-                await MultiClippingPlane.remove(batch_index);
-                batch_index = undefined;
+            const ctime = (batch_time = getTimestamp());
+            batch_index !== undefined && (await MultiClippingPlane.remove(batch_index));
+            batch_index = undefined;
+            if (v) {
+                batch_index = await MultiClippingPlane.draw(positions);
+                if (ctime !== batch_time) {
+                    await MultiClippingPlane.remove(batch_index);
+                    batch_index = undefined;
+                }
             }
-        }
-    });
+        });
 };
 //# sourceMappingURL=clipping-plane.js.map

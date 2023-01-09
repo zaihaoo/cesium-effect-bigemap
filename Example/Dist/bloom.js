@@ -72,14 +72,14 @@ export const example = (viewer, gui) => {
         .add(options, 'power')
         .name('是否开启')
         .onChange(v => {
-        if (v) {
-            _handler.setInputAction(_handlerEvent, ScreenSpaceEventType.MOUSE_MOVE);
-        }
-        else {
-            _handler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
-            _viewer.scene.bloom.removeAll();
-            _last = [];
-        }
-    });
+            if (v) {
+                _handler.setInputAction(_handlerEvent, ScreenSpaceEventType.MOUSE_MOVE);
+            }
+            else {
+                _handler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
+                _viewer.scene.bloom.removeAll();
+                _last = [];
+            }
+        });
 };
 //# sourceMappingURL=bloom.js.map

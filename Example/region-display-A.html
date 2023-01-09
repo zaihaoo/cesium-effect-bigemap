@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<link rel="stylesheet" type="text/css" href="./Lib/Cesium/Widgets/widgets.css" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Example>sky-box</title>
+		<title>Example>region-display-A</title>
 	</head>
 	<body>
 		<script type="module">
@@ -15,7 +15,7 @@
 				PostProcessStageLibrary,
 				Viewer,
 				Color,
-                ScreenSpaceEventType,
+				ScreenSpaceEventType,
 			} from './Lib/Cesium/index.js';
 
 			Ion.defaultAccessToken =
@@ -38,9 +38,7 @@
 				},
 			});
 
-			viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
-				ScreenSpaceEventType.LEFT_DOUBLE_CLICK
-			);
+			viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 			viewer.scene.globe.depthTestAgainstTerrain = true;
 			viewer.scene.debugShowFramesPerSecond = true;
 			viewer.cesiumWidget.creditContainer.style.display = 'none';
