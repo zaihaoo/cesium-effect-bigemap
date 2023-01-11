@@ -25198,9 +25198,9 @@ export function EncircleLine(center: Cartesian3, radius: number, color?: Color, 
 /**
  * 初始化近地雾化效果
  * @param viewer - Viewer对象
- * @param [color] - 雾化的颜色
- * @param [fogParams] - 雾化效果参数 x:near的深度值 y:near的雾化效果阈值 z:far的深度值 w:far的雾化效果阈值 new Cartesian4(10.0, 0.0, 3000, 1.0)
- * @param [cameraHeight = 10000] - 近地摄像机高度(雾化效果的生效高度)
+ * @param [color = Color.WHITE] - 雾化的颜色
+ * @param [fogParams = new Cartesian4(10.0, 0.2, 25000, 1.0)] - 雾化效果参数 x:near的深度值 y:near的雾化效果阈值 z:far的深度值 w:far的雾化效果阈值 new Cartesian4(10.0, 0.0, 3000, 1.0)
+ * @param [cameraHeight = 20000] - 近地摄像机高度(雾化效果的生效高度)
  */
 export class FogControl {
     constructor(viewer: Viewer, color?: Color, fogParams?: Cartesian4, cameraHeight?: number);
@@ -39891,6 +39891,10 @@ export class Scene {
      * The light source for shading. Defaults to a directional light from the Sun.
      */
     light: Light;
+    /**
+     * 是否开启云盒
+     */
+    cloudBox: boolean;
     /**
      * 泛光对象
      */
